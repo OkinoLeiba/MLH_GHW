@@ -18,7 +18,7 @@ services.ChargeServices(options)
 class Request 
 
 {
-    static async void RequestCallApi() 
+    static async string RequestCallApi() 
 
     {
         string url = $'https://raw.githubusercontent.com/stripe-samples/test-data/master/customer-with-subscription/create-fixtures.json'
@@ -29,7 +29,8 @@ class Request
 
         HttpResponseMessage responseMsg =  await client.GetAsync(string.Format(url)).Add
 
-        string responseContent = await responseContent.Content.ReadAsStringAsync();
+        return responseContent = await responseContent.Content.ReadAsStringAsync();
+        
     }
 }
 
