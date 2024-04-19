@@ -1,8 +1,12 @@
-import requests, json, py_compile
-from typing import Optional, Any
+import requests, os, json, py_compile, string, base64
+from typing import Optional,Union, Any
+from random import choices
+from hashlib import md5
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(root_path='https://api.spotify.com')
+
+
 
 # data = {
 #     response_type: 'code',
@@ -15,7 +19,7 @@ app = FastAPI()
 # }
 
 
-
+app.route('/data.json')
 def RequestSpotifyData(request: Optional[Any] = None) -> json:
     # request = requests.get()
     file = open('data.json')
@@ -30,44 +34,128 @@ def RequestSpotifyData(request: Optional[Any] = None) -> json:
 
 
 
-app.route('token', methods=['POST'])
+app.route('/api/token', methods=['POST'])
 def RequestSpotifyApiKey() -> str:
+    global ACCESS_TOKEN
     URL = 'https://accounts.spotify.com/api/token'
 
+    random_hash = ''.join(choices(string.ascii_lowercase + string.ascii_lowercase + string.digits, k=16))
+
+    hash = md5(os.urandom(128)).hexdigest()[:16]
+
+
     DATA = {
-    'client_id': RequestSpotifyData('client_id'),
-    'client_secret': RequestSpotifyData('client_secret'),
-    'code': RequestSpotifyData('response_type'),
-    # 'scope': 'scope',
-    'grant_type': RequestSpotifyData('grant_type'),
-    'redirect_uri': RequestSpotifyData('redirect_uri'),
-    # 'state': 'state'
+    "client_id": RequestSpotifyData('client_id'),
+    "client_secret": RequestSpotifyData('client_secret'),
+    # "code": RequestSpotifyData('response_type'),
+    # "scope": RequestSpotifyData('scope')['open_access'][0],
+    "grant_type": RequestSpotifyData('grant_type')[1],
+    "redirect_uri": RequestSpotifyData('redirect_uri'),
+    "state": hash
 }
 
     response = requests.post(url=URL, data=DATA)
 
-    API_KEY = response.dump()
+    response_data = response.json()
 
-    return "Access token saved."
+    ACCESS_TOKEN = response_data['access_token']
+
+    return ACCESS_TOKEN
+
+app.route(path='/v1/albums', methods=['GET'])
+def RequestSpotifyAlbum(id: Optional[str] = None) -> json:
+
+    URL = f"https://api.spotify.com/v1/albums?ids={id}"
+
+    HEADERS = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}"
+    }
+
+    response = requests.get(url=URL, headers=HEADERS)
+
+    response_data = response.json()
+
+    if response_data == None:
+        print('Album not found, please ensure album name is correct.')
+    else:
+        return response_data
+
+
+app.route(path='/albums', methods=['GET'])
+def RequestSpotifyAlbums(ids: Optional[Union[str | list]]) -> json:
+    URL = 'https://api.spotify.com/v1/albums?ids='
+
+    url_param = ''
+    for index,id in enumerate(ids):
+        if index == 0:
+            url_param += ''.join(id)
+        else:
+            url_param += ''.join('%' + id)
+
+    HEADERS = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}"
+    }
+
+    response = requests.get(url=URL, headers=HEADERS)
+
+    response_data = response.json()
+
+    if response_data == None or response_data['error']['status'] == 400:
+        print('Albums not found, please ensure album name is correct.')
+    else:
+        return response_data
+    
+
+app.route(path='/v1/albums', methods=['Delete'])
+def DeleteSpotifyAlbum(ids: Optional[Union[str | list]]) -> None:
+    URL = 'https://api.spotify.com/v1/albums?ids='
+    
+    url_param = ''
+    for index,id in enumerate(ids):
+        if index == 0:
+            url_param += ''.join(id)
+        else:
+            url_param += ''.join('%' + id)
+
+    HEADERS = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        'Content-Type': "application/json"
+    }
+
+    response = requests.delete(url=URL+url_param, data=ids, headers=HEADERS,)
+
+    response_data = response.json()
+
+    if len(ids) == 0:
+        return 'Album has been successfully deleted.'
+    else:
+        return 'Albums has been successfully deleted.'
+    
+    
+
+app.route('/browse/new-releases', methods=['GET'])
+def GetNewReleases() -> dict:
+    URL = 'https://api.spotify.com/v1/browse/new-releases'
+
+    HEADERS = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}"
+    }
+
+    response = requests.get(url=URL, headers=HEADERS)
+
+    response_data = response.json()
+
+    return response_data['albums']['items']
+
+
+
 
 if __name__ == '__main__':
-    RequestSpotifyApiKey()
+    app.__init__(on_startup=RequestSpotifyApiKey())
+    RequestSpotifyAlbum('4aawyAB9vmqN3uQ7FjRGTy')
+    RequestSpotifyAlbums(['82ObEPsp2rxGrnsizN5TX','2C1A2GTWGtFfWp7KSQTwWOyo','2C2noRn2Aes5aoNVsU6iWThc'])
+    GetNewReleases()
+    
 
 
 
-# var authOptions = {
- 
-#   headers: {
-#     'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
-#   },
-#   form: {
-#     grant_type: 'client_credentials'
-#   },
-#   json: true
-# };
-
-# request.post(authOptions, function(error, response, body) {
-#   if (!error && response.statusCode === 200) {
-#     var token = body.access_token;
-#   }
-# });
