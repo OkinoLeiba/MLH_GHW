@@ -1,0 +1,52 @@
+ {
+    "apiKey": "sk_test_51P2ITx08E6dS14v5umSelPiMlsmiRmUipXA4TAcQZfyXDx59M6qEU2ptPcGmzOsFab4UDxfGWcSaXqInfgOUqdoq00ybu4R8fY",
+    "Spotify": {
+        "response_type": "",
+        "client_id": "9f1f2a1cbe32415f8b3b0e01d3e1a967",
+        "client_secret": "35981fd615984c65acad692dd7d928e2",
+        "expires_in": 3600,
+        "scope": {
+            "images": "ugc-image-upload",
+            "spotify_connect": [
+                "user-read-playback-state",
+                "user-modify-playback-state",
+                "user-read-currently-playing"],
+            "playback": [
+                "app-remote-control",
+                "streaming"],
+            "playlists": [
+                "playlist-read-private",
+                "playlist-read-collaborative",
+                "playlist-modify-private",
+                "playlist-modify-public"],
+            "follow": [
+                "user-follow-modify",
+                "user-follow-read"],
+            "listening_history": [
+                "user-read-playback-position",
+                "user-top-read",
+                "user-read-recently-played"],
+            "library": [
+                "user-library-modify",
+                "user-library-read"],
+            "users": [
+                "user-read-email",
+                "user-read-private"],
+            "open_access": [
+                "user-soa-link",
+                "user-soa-unlink",
+                "soa-manage-entitlements",
+                "soa-manage-partner",
+                "soa-create-partner"]
+        },
+        "grant_type": [
+            "authorization_code", 
+            "client_credentials"],
+        "redirect_uri": "http://locahost:3000",
+        "state": "state",
+        "content_type": "application/x-www-form-urlencoded"
+        }
+
+
+}
+
