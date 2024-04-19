@@ -1,6 +1,8 @@
 import stripe, sys, os, json, requests, py_compile
 from typing import Union, Optional, Any
 from fastapi import FastAPI
+from stripe._stripe_object import StripeObject
+
 
 sys.path.append('/anaconda3/Lib/site-packages')
 sys.path.insert(0, '/anaconda3/Lib/site-packages')
@@ -18,16 +20,20 @@ def PullData(data_request: Optional[Any] = None) -> any:
         return data[data_request]
     except Exception:
         print("No value was passed to the function.")
-    
+
+ 
 
 global API_KEY
 
 API_KEY = stripe.api_key = PullData('apiKey')
 URL = 'https://raw.githubusercontent.com/stripe-samples/test-data/master/customer-with-subscription/create-fixtures.json'
-class MLH_Stripe:
+class MLH_Stripe(StripeObject):
+
+    def __init__(self) -> None:
+        pass
     
     
-    def RequestCall(url: Optional[str] = None) -> json:
+    def RequestCall(self, url: Optional[str] = None) -> json:
         # r = requests.Request('GET', URL)
         header = {
            'Authorization' : API_KEY 
@@ -45,7 +51,8 @@ class MLH_Stripe:
     # stripe.app_info('stripe-samples/checkout-one-time-payments', version='0.0.1', url='https://github.com/stripe-samples/checkout-one-time-payments')
 
     # create customer data to [initial test data]
-    def CreateCustomer() -> None:
+    app.post('/v1/customers')
+    def CreateCustomer(self) -> stripe.Customer:
         customer_options =  {
                 #  'id'  :  "cus_NffrFeUfNV2Hib",
                 'Address'  :  None,
@@ -78,19 +85,29 @@ class MLH_Stripe:
                 'TestClock'  :  None
                 }
         
-        stripe.CustomerService.create(customer_options)
+        return stripe.CustomerService.create(self=stripe.CustomerService)
 
     # request customer data object from strip
-    def RequestCustomer(id: Optional[str] = None) -> dict:
+    def RequestCustomer(self, id: Optional[str] = None) -> dict:
 
         return stripe.Charge.retrieve("ch_3Ln3e92eZvKYlo2C0eUfv7bi", api_key=API_KEY)
 
         # "ch_3Lmjoz2eZvKYlo2C1rBER4Dk",
         # stripe_account="acct_1032D82eZvKYlo2C"
 
+    # update customer data object
+    app.post(f'/v1/customers/{id}')
+    def UpdateCustomer(self, id: Optional[str] = None, update_option: Optional[dict] = None) -> None:
+        # metadata={"order_id": "6735"}
+        stripe.Customer.modify(id, update_option)
+
+    app.delete(f'/v1/customers/{id}')
+    def DeleteCustomer(self, id: Optional[str] = None) -> None:
+        stripe.Customer.delete(id, stripe_account='')
+
 if __name__ == '__main__':
     mlh_stripe = MLH_Stripe
-    mlh_stripe.CreateCustomer()
+    mlh_stripe.CreateCustomer(self=mlh_stripe)
 
 
     
