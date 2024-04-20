@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_KEY="sk_test_51P2ITx08E6dS14v5umSelPiMlsmiRmUipXA4TAcQZfyXDx59M6qEU2ptPcGmzOsFab4UDxfGWcSaXqInfgOUqdoq00ybu4R8fY"
+API_KEY=""
 
 declare -A request 
 
