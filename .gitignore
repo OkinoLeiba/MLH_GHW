@@ -1,1 +1,4 @@
 .vscode
+
+# files contains api_key and client id & secret
+data.json

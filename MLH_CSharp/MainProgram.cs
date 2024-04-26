@@ -10,7 +10,7 @@ namespace MLH
         public static void Main(string[] args)
         {
 
-            _ = Request.RequestCallApi();
+            _ = Request.RequestCallApi("dfsf");
             RequestCustomer.GetCustomerObject();
             Console.WriteLine("Hello, World!");
         }

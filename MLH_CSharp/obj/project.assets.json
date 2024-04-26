@@ -468,11 +468,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\okino\\source\\MLH_GWH\\MLH_CSharp\\MLH_CSHarp.csproj",
+      "projectUniqueName": "C:\\Users\\okino\\source\\MLH_GHW\\MLH_CSharp\\MLH_CSHarp.csproj",
       "projectName": "MLH_CSHarp",
-      "projectPath": "C:\\Users\\okino\\source\\MLH_GWH\\MLH_CSharp\\MLH_CSHarp.csproj",
+      "projectPath": "C:\\Users\\okino\\source\\MLH_GHW\\MLH_CSharp\\MLH_CSHarp.csproj",
       "packagesPath": "C:\\Users\\okino\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\okino\\source\\MLH_GWH\\MLH_CSharp\\obj\\",
+      "outputPath": "C:\\Users\\okino\\source\\MLH_GHW\\MLH_CSharp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\okino\\AppData\\Roaming\\NuGet\\NuGet.Config"

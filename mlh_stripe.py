@@ -105,6 +105,10 @@ class MLH_Stripe(StripeObject):
     def DeleteCustomer(self, id: Optional[str] = None) -> None:
         stripe.Customer.delete(id, stripe_account='')
 
+    app.get('/v1/customers')
+    def GetCustomerList(self, count: int = 0) -> list:
+        return stripe.Customer.list(list=count, stripe_account='')
+
 if __name__ == '__main__':
     mlh_stripe = MLH_Stripe
     mlh_stripe.CreateCustomer(self=mlh_stripe)

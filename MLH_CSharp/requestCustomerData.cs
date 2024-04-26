@@ -7,7 +7,8 @@ using Stripe;
 class RequestCustomer {
     
    public static void GetCustomerObject() {
-        const string API_KEY = "sk_test_51P2ITx08E6dS14v5umSelPiMlsmiRmUipXA4TAcQZfyXDx59M6qEU2ptPcGmzOsFab4UDxfGWcSaXqInfgOUqdoq00ybu4R8fY";
+        const string API_KEY = IAPIKEY.API_KEY;       
+      //   "sk_test_51P2ITx08E6dS14v5umSelPiMlsmiRmUipXA4TAcQZfyXDx59M6qEU2ptPcGmzOsFab4UDxfGWcSaXqInfgOUqdoq00ybu4R8fY";
         
    
         RequestOptions request_option = new RequestOptions{ApiKey=API_KEY};

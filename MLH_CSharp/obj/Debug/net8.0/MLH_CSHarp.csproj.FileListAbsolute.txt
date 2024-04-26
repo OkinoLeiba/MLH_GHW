@@ -27,3 +27,4 @@ C:\Users\okino\source\MLH_GWH\MLH_CSharp\obj\Debug\net8.0\refint\MLH_CSHarp.dll
 C:\Users\okino\source\MLH_GWH\MLH_CSharp\obj\Debug\net8.0\MLH_CSHarp.pdb
 C:\Users\okino\source\MLH_GWH\MLH_CSharp\obj\Debug\net8.0\MLH_CSHarp.genruntimeconfig.cache
 C:\Users\okino\source\MLH_GWH\MLH_CSharp\obj\Debug\net8.0\ref\MLH_CSHarp.dll
+C:\Users\okino\source\MLH_GWH\MLH_CSharp\obj\Debug\net8.0\MLH_CSHarp.sourcelink.json
