@@ -1,5 +1,5 @@
 import stripe, sys, os, json, requests, py_compile
-from typing import Union, Optional, Any
+from typing import Union, Optional, cast, Any
 from fastapi import FastAPI
 from stripe._stripe_object import StripeObject
 
@@ -12,7 +12,7 @@ py_compile.compile('mlh_stripe.py')
 app = FastAPI()
 
 def PullData(data_request: Optional[Any] = None) -> any:
-    file = open('data.json')
+    file = open('stripe_data.json')
 
     data = json.load(file)
     
@@ -26,6 +26,10 @@ def PullData(data_request: Optional[Any] = None) -> any:
 global API_KEY
 
 API_KEY = stripe.api_key = PullData('apiKey')
+
+# unnecessary? 
+stripe.api_key = API_KEY
+
 URL = 'https://raw.githubusercontent.com/stripe-samples/test-data/master/customer-with-subscription/create-fixtures.json'
 class MLH_Stripe(StripeObject):
 
@@ -53,43 +57,78 @@ class MLH_Stripe(StripeObject):
     # create customer data to [initial test data]
     app.post('/v1/customers')
     def CreateCustomer(self) -> stripe.Customer:
-        customer_options =  {
-                #  'id'  :  "cus_NffrFeUfNV2Hib",
-                'Address'  :  None,
-                'Balance'  :  0,
-                'CashBalance' : None,
-                # 'created'  :  1680893993,
-                #  'currency'  :  None,
-                #  'default_source'  :  None,
-                #  'delinquent'  :  False,
-                'Description'  :  None,
-                # 'discount'  :  None,
-                 'Email'  :  "jennyrosen@example.com",
-                #  'invoice_prefix'  :  "0759376C",
-                'InvoiceSettings'  :  {
+        customer_params =  {
+                'id'  :  "cus_NffrFeUfNV2Hib",
+                'address'  :  None,
+                "object": "customer",
+                'balance'  :  0,
+                'cashBalance' : None,
+                'created'  :  1680893993,
+                'currency'  :  None,
+                'defaultSource'  :  None,
+                'delinquent'  :  False,
+                'description'  :  None,
+                'discount'  :  None,
+                 'email'  :  "jennyrosen@example.com",
+                'invoice_prefix'  :  "0759376C",
+                'invoiceSettings'  :  {
                      'CustomFields'  :  None,
                      'DefaultPaymentMethod'  :  None,
                      'Footer'  :  None,
                      'RenderingOptions'  :  None
                 },
-                #  'livemode'  :  False,
-                'PaymentMethod' : "card",
-                'Metadata'  :  {},
-                'Name'  :  "Jenny Rosen",
-                #  'next_invoice_sequence'  :  1,
-                'Phone'  :  None,
-                'Plan' : None,
-                'PreferredLocales'  :  ["en-US"],
-                'Shipping'  :  None,
-                'TaxExempt'  :  None,
-                'TestClock'  :  None
+                'liveMode'  :  False,
+                'paymentMethod' : "card",
+                'metadata'  :  {},
+                'name'  :  "Jenny Rosen",
+                'next_invoice_sequence'  :  1,
+                'phone'  :  None,
+                'plan' : None,
+                'preferredLocales'  :  ["en-US"],
+                'shipping'  :  None,
+                'taxExempt'  :  None,
+                'testClock'  :  None
                 }
-        
-        return stripe.CustomerService.create(self=stripe.CustomerService)
+
+        return stripe.Customer.create(
+                address  = customer_params.get('address') or None,
+                balance  =  customer_params.get('balance') or 0,
+                currency =  customer_params.get('currency') or None,
+                cashBalance = customer_params.get('cashBalance') or None,
+                default_source =  customer_params.get('defaultSource') or None,
+                description  = customer_params.get('description') or None,
+                discount  = customer_params.get('discount') or None,
+                email  =  customer_params.get('email') or None,
+                invoiceSettings  =  customer_params.get('invoiceSettings') or {},
+                metadata  =  customer_params.get('metadata') or {},
+                name  =  customer_params.get('name') or None,
+                phone  =  customer_params.get('phone') or None,
+                plan = customer_params.get('plan') or None,
+                preferred_locales  = customer_params.get('preferredLocales') or [],
+                shipping  =  customer_params.get('shipping') or None,
+                tax_exempt  =  customer_params.get('taxExempt') or 'none',
+                test_clock  =  customer_params.get('testClock') or None
+            )
+    
+    # search for customer: other than id parameter
+    app.get(f'/v1/customers/search')
+    def QueryCustomer(self, param: Optional[list[Any] | str] = None, param_type: Optional[list[Any] | str] = None) -> stripe.Customer:
+        params = ''
+        while True:
+            if type(param) == str:
+                params += param_type + ': ' + '"'+param+'"'
+                break
+            for i,v in enumerate(param):
+                if i == 0:
+                    params += param_type + ': ' + param
+                else:
+                    params += param_type + ': ' + param + ' AND ' 
+            break
+        return stripe.Customer.search(query=params)
 
     # request customer data object from strip
-    def RequestCustomer(self, id: Optional[str] = None) -> dict:
-
+    app.get(f'/v1/customers/{id}')
+    def RequestCustomer(self, id: Optional[str] = None) -> stripe.Customer:
         return stripe.Charge.retrieve("ch_3Ln3e92eZvKYlo2C0eUfv7bi", api_key=API_KEY)
 
         # "ch_3Lmjoz2eZvKYlo2C1rBER4Dk",
@@ -104,14 +143,18 @@ class MLH_Stripe(StripeObject):
     app.delete(f'/v1/customers/{id}')
     def DeleteCustomer(self, id: Optional[str] = None) -> None:
         stripe.Customer.delete(id, stripe_account='')
+    
 
     app.get('/v1/customers')
     def GetCustomerList(self, count: int = 0) -> list:
         return stripe.Customer.list(list=count, stripe_account='')
 
 if __name__ == '__main__':
-    mlh_stripe = MLH_Stripe
-    mlh_stripe.CreateCustomer(self=mlh_stripe)
+    mlh_stripe = MLH_Stripe()
+    mlh_stripe.CreateCustomer()
+    mlh_stripe.QueryCustomer("Jenny Rosen", 'email')
+    mlh_stripe.RequestCustomer(mlh_stripe.QueryCustomer().id)
+    
 
 
     
