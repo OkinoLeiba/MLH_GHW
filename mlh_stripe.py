@@ -89,8 +89,8 @@ class MLH_Stripe(StripeObject):
                 'taxExempt'  :  None,
                 'testClock'  :  None
                 }
-
-        return stripe.Customer.create(
+        stripe.CustomerService
+        return cast(stripe.Customer, stripe.Customer.create(
                 address  = customer_params.get('address') or None,
                 balance  =  customer_params.get('balance') or 0,
                 currency =  customer_params.get('currency') or None,
@@ -108,7 +108,7 @@ class MLH_Stripe(StripeObject):
                 shipping  =  customer_params.get('shipping') or None,
                 tax_exempt  =  customer_params.get('taxExempt') or 'none',
                 test_clock  =  customer_params.get('testClock') or None
-            )
+            ))
     
     # search for customer: other than id parameter
     app.get(f'/v1/customers/search')
@@ -124,12 +124,13 @@ class MLH_Stripe(StripeObject):
                 else:
                     params += param_type + ': ' + param + ' AND ' 
             break
-        return stripe.Customer.search(query=params)
+        
+        return cast(stripe.Customer, stripe.Customer.search(query=params))
 
     # request customer data object from strip
     app.get(f'/v1/customers/{id}')
     def RequestCustomer(self, id: Optional[str] = None) -> stripe.Customer:
-        return stripe.Charge.retrieve("ch_3Ln3e92eZvKYlo2C0eUfv7bi", api_key=API_KEY)
+        return cast(stripe.Customer, stripe.Customer.retrieve(id, api_key=API_KEY))
 
         # "ch_3Lmjoz2eZvKYlo2C1rBER4Dk",
         # stripe_account="acct_1032D82eZvKYlo2C"
@@ -137,8 +138,11 @@ class MLH_Stripe(StripeObject):
     # update customer data object
     app.post(f'/v1/customers/{id}')
     def UpdateCustomer(self, id: Optional[str] = None, update_option: Optional[dict] = None) -> None:
-        # metadata={"order_id": "6735"}
-        stripe.Customer.modify(id, update_option)
+        test = [update_key = update_value]
+        metadata = {"order_id": "6735"}
+        print(stripe.Customer.modify(id, ))
+        return stripe.Customer.modify(id, metadata = {"order_id": "6735"})
+
 
     app.delete(f'/v1/customers/{id}')
     def DeleteCustomer(self, id: Optional[str] = None) -> None:
@@ -153,7 +157,8 @@ if __name__ == '__main__':
     mlh_stripe = MLH_Stripe()
     mlh_stripe.CreateCustomer()
     mlh_stripe.QueryCustomer("Jenny Rosen", 'email')
-    mlh_stripe.RequestCustomer(mlh_stripe.QueryCustomer().id)
+    mlh_stripe.RequestCustomer(mlh_stripe.CreateCustomer().id)
+    mlh_stripe.UpdateCustomer(mlh_stripe.CreateCustomer().id)
     
 
 
